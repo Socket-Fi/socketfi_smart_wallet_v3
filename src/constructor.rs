@@ -1,30 +1,27 @@
-use soroban_sdk::{contract, Address, BytesN, Env, String, Vec};
+use soroban_sdk::{Address, BytesN, Env, String, Vec};
 
 use crate::{
-    access::{
-        write_aggregated_pk_bytes, write_dapp_router_contract_id, write_master_contract_id,
-        write_web_keys_bytes,
-    },
-    account_token::write_allowance_expiration,
-    bls_account_auth::{write_dst_bytes, write_nonce},
+    access::{write_agg_bls_key, write_factory, write_web_keys},
     error::ContractError,
+    version::write_installed_version,
+    wallet_bls_auth::write_nonce,
+    wallet_token::{write_allowance_expiration, write_default_spend_limit},
 };
 
 pub fn init_constructor(
     env: Env,
-    bls_pubkeys: Vec<BytesN<96>>,
-    platform: String,
-    social_username: String,
-    web_pubkey: BytesN<77>,
-    master_contract_id: Address,
-    dapp_router_contract_id: Address,
+    username: String,
+    passkey: BytesN<77>,
+    bls_keys: Vec<BytesN<96>>,
+    factory: Address,
+    version: BytesN<32>,
 ) -> Result<(), ContractError> {
-    write_aggregated_pk_bytes(&env, bls_pubkeys);
-    write_web_keys_bytes(&env, platform, social_username, web_pubkey);
-    write_dst_bytes(&env);
-    write_master_contract_id(&env, &master_contract_id);
-    write_dapp_router_contract_id(&env, &dapp_router_contract_id);
-    write_allowance_expiration(&env, 17000);
+    write_agg_bls_key(&env, bls_keys)?;
+    let _ = write_web_keys(&env, username, passkey);
+    write_factory(&env, &factory);
+    write_default_spend_limit(&env, 1_000_000_000);
+    write_allowance_expiration(&env, 17_000);
     write_nonce(&env);
+    write_installed_version(&env, version);
     Ok(())
 }

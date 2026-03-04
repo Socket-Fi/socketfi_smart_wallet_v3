@@ -1,15 +1,15 @@
 #![no_std]
 
 mod access;
-mod account;
-mod account_token;
-mod bls_account_auth;
 mod constructor;
-mod dap_adapter;
 mod data;
 mod error;
 mod formatter;
-mod test;
-mod token_list;
+mod invocation_auth;
 mod types;
-mod user_account_trait;
+mod version;
+mod wallet;
+mod wallet_bls_auth;
+mod wallet_token;
+mod wallet_trait;
+// mod test;
